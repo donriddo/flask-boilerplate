@@ -2,9 +2,9 @@ from setup import db
 from src.users.user_model import User
 
 
-def create_user(record):
-    user = User(first_name=record['first_name'],
-                last_name=record['last_name'], email=record['email'])
+def create_user(data):
+    user = User(first_name=data['first_name'],
+                last_name=data['last_name'], email=data['email'])
     db.session.add(user)
     db.session.commit()
     return user.to_json()
