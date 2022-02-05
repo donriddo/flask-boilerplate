@@ -1,4 +1,5 @@
 # coding: utf-8
+from importlib import reload
 from src.users.user_controller import user_api
 from setup import setup_cache, setup_db, setup_redis
 from config import load_config
