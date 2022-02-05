@@ -3,6 +3,7 @@
 import json
 from flask import Blueprint, request, jsonify, make_response
 from src.users.user_repo import create_user, fetch_all_users, fetch_user
+from setup import cache
 
 user_api = Blueprint('user', __name__)
 
@@ -32,9 +33,11 @@ def create_new_user():
 
 
 @user_api.route('/', methods=['GET'])
+@cache.cached(query_string=True)
 def list_users():
     page = 1
     per_page = 10
+    print(request.path)
     try:
         page = int(request.args.get('page'))
         per_page = int(request.args.get('per_page'))
@@ -55,6 +58,7 @@ def list_users():
 
 
 @user_api.route('/:id', methods=['GET'])
+@cache.cached(query_string=True)
 def get_user_info():
     uid = request.params.get('id')
     first_name = request.args.get('first_name')
