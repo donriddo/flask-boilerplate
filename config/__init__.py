@@ -1,5 +1,7 @@
 # coding: UTF-8
 import os
+
+
 def load_config(mode=os.environ.get('MODE')):
     """Load config."""
     try:
@@ -7,8 +9,8 @@ def load_config(mode=os.environ.get('MODE')):
             from .production import ProductionConfig
             return ProductionConfig
         elif mode == 'TESTING':
-            from .testing import TestingConfig
-            return TestingConfig
+            from .test import TestConfig
+            return TestConfig
         else:
             from .development import DevelopmentConfig
             return DevelopmentConfig
