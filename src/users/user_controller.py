@@ -42,7 +42,7 @@ def list_users():
         pass
 
     result = fetch_all_users(page=page, per_page=per_page)
-    print(result)
+
     return make_response(
         {
             "status": 200,
