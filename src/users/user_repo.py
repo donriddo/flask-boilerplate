@@ -10,8 +10,8 @@ def create_user(data):
     return user.to_json()
 
 
-def fetch_user(name=None, email=None):
-    user = User.objects(name=name, email=email).first()
+def fetch_user(id):
+    user = User.query.get(id)
     if user:
         return user.to_json()
     else:
@@ -33,3 +33,26 @@ def fetch_all_users(page=1, per_page=5):
         },
         "data": list(map(lambda user: user.to_json(), result.items))
     }
+
+
+def update_user(id, data):
+    user = User.query.get(id)
+    if not user:
+        return None
+
+    for key in data:
+        if hasattr(user, key):
+            setattr(user, key, data[key])
+
+    db.session.commit()
+    return user.to_json()
+
+
+def delete_user(id):
+    user = User.query.get(id)
+    if not user:
+        return None
+
+    db.session.delete(user)
+    db.session.commit()
+    return user.to_json()
