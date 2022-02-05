@@ -19,7 +19,7 @@ def fetch_user(name=None, email=None):
 
 
 def fetch_all_users(page=1, per_page=5):
-    result = User.query.order_by(User.created_at.desc()).paginate(
+    result = User.query.order_by(User.id.desc()).paginate(
         page, per_page, error_out=False)
 
     return {
