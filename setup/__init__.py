@@ -1,6 +1,9 @@
-from setup.mongo import mongo
+from setup.postgres import postgres
+from flask_migrate import Migrate
 
-db = mongo
+db = postgres
+
 
 def setup_db(app):
-  db.init_app(app)
+    db.init_app(app)
+    migrate = Migrate(app, db)
