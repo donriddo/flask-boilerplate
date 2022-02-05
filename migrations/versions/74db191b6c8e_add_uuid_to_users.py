@@ -24,7 +24,6 @@ def upgrade():
         'uuid', postgresql.UUID(as_uuid=True), nullable=True))
     op.bulk_insert(User.__table__, [
         {
-            "id": x,
             "email": f'user{x}@example.com',
             "first_name": f'first{x}',
             "last_name": f'last{x}'
