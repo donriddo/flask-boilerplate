@@ -4,3 +4,6 @@ flask-mongoengine
 Flask-WTF
 Flask-Script
 mongoengine
+psycopg2-binary
+flask-sqlalchemy
+Flask-Migrate
