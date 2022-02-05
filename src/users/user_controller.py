@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import json
+from sqlalchemy.exc import IntegrityError
 from flask import Blueprint, request, jsonify, make_response
-from src.users.user_repo import create_user, fetch_all_users, fetch_user
+from src.users.user_repo import create_user, delete_user, fetch_all_users, fetch_user, update_user
 from setup import cache
 
 user_api = Blueprint('user', __name__)
@@ -11,12 +12,17 @@ user_api = Blueprint('user', __name__)
 @user_api.route('/', methods=['POST'])
 def create_new_user():
     info = json.loads(request.data)
-    email = info.get('email', '')
-    first_name = info.get('first_name', '')
-    last_name = info.get('last_name', '')
-    user = create_user(
-        {"email": email, "first_name": first_name, "last_name": last_name})
+    user = None
+    try:
+        user = create_user(info)
+    except IntegrityError:
+        return make_response(
+            jsonify({"status": 400, "message": "user already exists"}),
+            400
+        )
+
     if user:
+        cache.clear()
         return make_response(
             jsonify({
                 "status": 200,
@@ -57,18 +63,55 @@ def list_users():
     )
 
 
-@user_api.route('/:id', methods=['GET'])
+@user_api.route('/<int:id>', methods=['GET'])
 @cache.cached(query_string=True)
-def get_user_info():
-    uid = request.params.get('id')
-    first_name = request.args.get('first_name')
-    email = request.args.get('email')
-    user = fetch_user({"email": email, "first_name": first_name})
+def get_user_info(id):
+    user = fetch_user(id)
     if user:
         return make_response(
             jsonify({
                 "status": 200,
                 "message": "user retrieved successfully",
+                "data": user
+            }),
+            200
+        )
+    else:
+        return make_response(
+            jsonify({"status": 404, "message": "user not found"}),
+            404
+        )
+
+
+@user_api.route('/<int:id>', methods=['PUT'])
+def update_user_info(id):
+    user = update_user(id, json.loads(request.data))
+    if user:
+        cache.clear()
+        return make_response(
+            jsonify({
+                "status": 200,
+                "message": "user updated successfully",
+                "data": user
+            }),
+            200
+        )
+    else:
+        return make_response(
+            jsonify({"status": 404, "message": "user not found"}),
+            404
+        )
+
+
+@user_api.route('/<int:id>', methods=['DELETE'])
+def delete_user_info(id):
+    user = delete_user(id)
+    if user:
+        cache.clear()
+        return make_response(
+            jsonify({
+                "status": 200,
+                "message": "user deleted successfully",
                 "data": user
             }),
             200
