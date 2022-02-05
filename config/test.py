@@ -17,3 +17,8 @@ class TestConfig(object):
         'host': 'localhost',
         'port': 27017
     }
+    # Cache config
+    CACHE_TYPE = 'RedisCache'
+    CACHE_DEFAULT_TIMEOUT = 300
+    REDIS_URL = 'redis://localhost:6379'
+    CACHE_REDIS_URL = REDIS_URL

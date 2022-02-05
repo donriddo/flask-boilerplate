@@ -19,3 +19,8 @@ class ProductionConfig(object):
         'host': 'localhost',
         'port': 27017
     }
+    # Cache config
+    CACHE_TYPE = 'RedisCache'
+    CACHE_DEFAULT_TIMEOUT = os.environ.get('CACHE_TIMEOUT')
+    REDIS_URL = os.environ.get('REDIS_URL')
+    CACHE_REDIS_URL = REDIS_URL
