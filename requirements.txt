@@ -7,3 +7,5 @@ mongoengine
 psycopg2-binary
 flask-sqlalchemy
 Flask-Migrate
+flask-redis
+Flask-Caching
