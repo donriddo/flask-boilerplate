@@ -50,7 +50,11 @@ def list_users():
     except:
         pass
 
-    result = fetch_all_users(page=page, per_page=per_page)
+    email = request.args.get('email')
+    first_name = request.args.get('first_name')
+    last_name = request.args.get('last_name')
+    query = {"email": email, "first_name": first_name, "last_name": last_name}
+    result = fetch_all_users(query, page=page, per_page=per_page)
 
     return make_response(
         {

@@ -18,9 +18,24 @@ def fetch_user(id):
         return None
 
 
-def fetch_all_users(page=1, per_page=5):
-    result = User.query.order_by(User.id.desc()).paginate(
-        page, per_page, error_out=False)
+def fetch_all_users(query, page=1, per_page=5):
+    result = User.query
+    for key in query:
+        if query[key] is None:
+            continue
+
+        if key == 'email':
+            result = result.filter_by(email=query["email"])
+        elif key == 'first_name':
+            result = result.filter_by(first_name=query["first_name"])
+        elif key == 'last_name':
+            result = result.filter_by(last_name=query["last_name"])
+
+    result = result.order_by(User.id.desc()).paginate(
+        page,
+        per_page,
+        error_out=False
+    )
 
     return {
         "meta": {
