@@ -1,7 +1,7 @@
 # coding: utf-8
 from importlib import reload
 from src.users.user_controller import user_api
-from setup import setup_cache, setup_db, setup_redis
+from setup import setup_cache, setup_db, setup_documentation, setup_redis
 from config import load_config
 from flask import Flask
 import logging
@@ -46,6 +46,7 @@ def setup_application(app):
     setup_db(app)
     setup_redis(app)
     setup_cache(app)
+    setup_documentation(app)
 
 
 def register_blueprints(app):
