@@ -1,15 +1,19 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import json
+import os
 from sqlalchemy.exc import IntegrityError
 from flask import Blueprint, request, jsonify, make_response
+from flasgger import swag_from
 from src.users.user_repo import create_user, delete_user, fetch_all_users, fetch_user, update_user
 from setup import cache
 
 user_api = Blueprint('user', __name__)
+docs_path = os.path.abspath(os.path.join(os.getcwd(), 'src/users/docs'))
 
 
 @user_api.route('/', methods=['POST'])
+@swag_from(f'{docs_path}/create_user.yml')
 def create_new_user():
     info = json.loads(request.data)
     user = None
@@ -39,6 +43,7 @@ def create_new_user():
 
 
 @user_api.route('/', methods=['GET'])
+@swag_from(f'{docs_path}/list_users.yml')
 @cache.cached(query_string=True)
 def list_users():
     page = 1
@@ -68,6 +73,7 @@ def list_users():
 
 
 @user_api.route('/<int:id>', methods=['GET'])
+@swag_from(f'{docs_path}/fetch_user.yml')
 @cache.cached(query_string=True)
 def get_user_info(id):
     user = fetch_user(id)
@@ -88,6 +94,7 @@ def get_user_info(id):
 
 
 @user_api.route('/<int:id>', methods=['PUT'])
+@swag_from(f'{docs_path}/update_user.yml')
 def update_user_info(id):
     user = update_user(id, json.loads(request.data))
     if user:
@@ -108,6 +115,7 @@ def update_user_info(id):
 
 
 @user_api.route('/<int:id>', methods=['DELETE'])
+@swag_from(f'{docs_path}/delete_user.yml')
 def delete_user_info(id):
     user = delete_user(id)
     if user:
