@@ -16,6 +16,8 @@
 
 4. Make sure you have PostgresDB installed and running 
 
+5. RUN `FLASK_APP=manager.py flask db upgrade` to execute the migrations
+
 6. RUN `python3 manager.py run` to launch the server
 
 
