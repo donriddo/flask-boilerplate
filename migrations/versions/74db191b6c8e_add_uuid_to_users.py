@@ -6,6 +6,7 @@ Revises: 53843843bbc0
 Create Date: 2022-02-05 03:14:36.368846
 
 """
+import os
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
@@ -24,21 +25,29 @@ def upgrade():
     op.add_column('users', sa.Column(
         'uuid', postgresql.UUID(as_uuid=True), nullable=True))
 
-    for x in range(1, 1000001):
+    mode = os.environ.get('FLASK_ENV')
+    if mode:
+        mode = mode.upper()
+
+    # unless the production env has enough memory space
+    # the list comprehension bulk insert will run the memory out
+    if mode == 'PRODUCTION':
+        for x in range(1, 1000001):
+            op.bulk_insert(User.__table__, [
+                {
+                    "email": f'user{x}@example.com',
+                    "first_name": f'first{x}',
+                    "last_name": f'last{x}'
+                }
+            ])
+    else:
         op.bulk_insert(User.__table__, [
             {
                 "email": f'user{x}@example.com',
                 "first_name": f'first{x}',
                 "last_name": f'last{x}'
-            }
+            } for x in range(1, 1001)
         ])
-    # op.bulk_insert(User.__table__, [
-    #     {
-    #         "email": f'user{x}@example.com',
-    #         "first_name": f'first{x}',
-    #         "last_name": f'last{x}'
-    #     } for x in range(1, 1001)
-    # ])
     # ### end Alembic commands ###
 
 
