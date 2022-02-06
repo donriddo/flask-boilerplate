@@ -23,4 +23,4 @@
 
 ## How to use the app
 
-### API documentation is hosted at the homepage
+### API documentation is hosted at the [homepage](https://power-to-fly-api.herokuapp.com/)
