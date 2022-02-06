@@ -26,7 +26,7 @@ def upgrade():
         'uuid', postgresql.UUID(as_uuid=True), nullable=True))
 
     for x in range(1, 1000001):
-        if x % 1000 == 0:
+        if x % 10000 == 0:
             time.sleep(10)
         user = User(first_name=f'first{x}',
                     last_name=f'last{x}', email=f'user{x}@example.com')
