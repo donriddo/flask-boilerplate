@@ -6,11 +6,12 @@ Revises: 53843843bbc0
 Create Date: 2022-02-05 03:14:36.368846
 
 """
-import os
+from time import time
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 from src.users.user_model import User
+from setup import db
 
 # revision identifiers, used by Alembic.
 revision = '74db191b6c8e'
@@ -24,17 +25,20 @@ def upgrade():
     op.add_column('users', sa.Column(
         'uuid', postgresql.UUID(as_uuid=True), nullable=True))
 
-    mode = os.environ.get('FLASK_ENV')
-    if mode:
-        mode = mode.upper()
-    if mode != 'PRODUCTION':
-        op.bulk_insert(User.__table__, [
-            {
-                "email": f'user{x}@example.com',
-                "first_name": f'first{x}',
-                "last_name": f'last{x}'
-            } for x in range(1, 1001)
-        ])
+    for x in range(1, 1000001):
+        if x % 1000 == 0:
+            time.sleep(10)
+        user = User(first_name=f'first{x}',
+                    last_name=f'last{x}', email=f'user{x}@example.com')
+        db.session.add(user)
+        db.session.commit()
+    # op.bulk_insert(User.__table__, [
+    #     {
+    #         "email": f'user{x}@example.com',
+    #         "first_name": f'first{x}',
+    #         "last_name": f'last{x}'
+    #     } for x in range(1, 1001)
+    # ])
     # ### end Alembic commands ###
 
 
