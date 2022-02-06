@@ -1,5 +1,5 @@
 summary: "Fetch User"
-description: "Fetch signle user."
+description: "Fetch single user."
 produces:
 - "application/json"
 parameters:
