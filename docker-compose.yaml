@@ -1,0 +1,44 @@
+version: '3'
+services:
+  redis_db:
+    image: "redis:latest"
+    restart: always
+    command: redis-server
+    env_file: .env
+    ports:
+      - 6379:6379
+    volumes:
+      - /var/local/redis/flask_app/data:/data
+    container_name: redis
+
+  postgres_db:
+    image: postgres:10
+    restart: always
+    volumes:
+      - /var/local/postgres/flask_app/data:/data
+    environment:
+      - POSTGRES_USER=hello_flask
+      - POSTGRES_PASSWORD=hello_flask
+      - POSTGRES_DB=flask-app
+    ports:
+      - 5432:5432
+    container_name: postgres
+
+  backend:
+    build:
+      context: .
+    ports:
+      - "4000:4000"
+    command: npm run prod
+    env_file: .env
+    environment:
+      FLASK_ENV: PRODUCTION
+      PORT: 4000
+      REDIS_URL: redis://redis_db:6379/0
+      POSTGRES_DATABASE_URI: postgresql://hello_flask:hello_flask@postgres_db:5432/flask-app
+
+    depends_on:
+      - redis_db
+      - postgres_db
+    restart: always
+    container_name: backend
