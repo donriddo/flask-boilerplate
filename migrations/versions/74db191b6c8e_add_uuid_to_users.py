@@ -6,7 +6,6 @@ Revises: 53843843bbc0
 Create Date: 2022-02-05 03:14:36.368846
 
 """
-from time import time
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
@@ -26,12 +25,13 @@ def upgrade():
         'uuid', postgresql.UUID(as_uuid=True), nullable=True))
 
     for x in range(1, 1000001):
-        if x % 10000 == 0:
-            time.sleep(10)
-        user = User(first_name=f'first{x}',
-                    last_name=f'last{x}', email=f'user{x}@example.com')
-        db.session.add(user)
-        db.session.commit()
+        op.bulk_insert(User.__table__, [
+            {
+                "email": f'user{x}@example.com',
+                "first_name": f'first{x}',
+                "last_name": f'last{x}'
+            }
+        ])
     # op.bulk_insert(User.__table__, [
     #     {
     #         "email": f'user{x}@example.com',
