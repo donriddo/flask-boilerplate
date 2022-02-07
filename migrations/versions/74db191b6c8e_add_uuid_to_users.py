@@ -6,12 +6,11 @@ Revises: 53843843bbc0
 Create Date: 2022-02-05 03:14:36.368846
 
 """
-import os
+import psutil
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 from src.users.user_model import User
-from setup import db
 
 # revision identifiers, used by Alembic.
 revision = '74db191b6c8e'
@@ -25,13 +24,21 @@ def upgrade():
     op.add_column('users', sa.Column(
         'uuid', postgresql.UUID(as_uuid=True), nullable=True))
 
-    mode = os.environ.get('FLASK_ENV')
-    if mode:
-        mode = mode.upper()
-
-    # unless the production env has enough memory space
-    # the list comprehension bulk insert will run the memory out
-    if mode == 'PRODUCTION':
+    """
+    This is a war between space and time
+    and unless there is enough memory space
+    the list comprehension bulk insert will run the memory out.
+    The amount of memory to seed the DB with 1 million users
+    has been calculated to be roughly 1.06 GB.
+    So I am setting the min threshold at 1.5 GB else use a slow
+    for-loop to iterate through and create each record at a time
+    """
+    total_memory = psutil.virtual_memory().total / (1024*1024)
+    ONE_POINT_FIVE_GB = 1.5 * 1024
+    print('Seeding the DB with 1 million users...\n')
+    if total_memory < ONE_POINT_FIVE_GB:
+        print(
+            f'Total memory space is {total_memory / 1024} GB which is less than the 1.5 GB cap so using a slow approach. Go get a cup of coffee\n')
         for x in range(1, 1000001):
             op.bulk_insert(User.__table__, [
                 {
@@ -41,12 +48,14 @@ def upgrade():
                 }
             ])
     else:
+        print(
+            f'Total memory space is {total_memory / 1024} GB which is more than the 1.5 GB cap so should not take too long\n')
         op.bulk_insert(User.__table__, [
             {
                 "email": f'user{x}@example.com',
                 "first_name": f'first{x}',
                 "last_name": f'last{x}'
-            } for x in range(1, 1001)
+            } for x in range(1, 1000001)
         ])
     # ### end Alembic commands ###
 
